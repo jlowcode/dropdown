@@ -132,6 +132,7 @@
 
 			<field name="dropdown_noselectionvalue"
 			       type="text"
+				   default=" "
 			       description="PLG_ELEMENT_DROPDOWN_NO_SELECTION_VALUE_DESC"
 			       label="PLG_ELEMENT_DROPDOWN_NO_SELECTION_VALUE_LABEL" />
 
