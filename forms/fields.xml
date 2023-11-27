@@ -113,21 +113,40 @@
 
 		</fieldset>
 
+		<!-- Id task: 209 -->
+		<fieldset label="COM_FABRIK_PLEASE_SELECT"
+		          name="plg-dropdown-xtra">
+			
+			<field type="helplink"
+				url="PLG_ELEMENT_DROPDOWN_HELP_SERVER" />
+
+			<field name="dropdown_show_please_select"
+			       type="radio"
+			       default="0"
+			       class="btn-group"
+			       description="PLG_ELEMENT_DROPDOWN_SHOW_PLEASE_SELECT_DESC"
+			       label="PLG_ELEMENT_DROPDOWN_SHOW_PLEASE_SELECT_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="dropdown_noselectionvalue"
+			       type="text"
+			       description="PLG_ELEMENT_DROPDOWN_NO_SELECTION_VALUE_DESC"
+			       label="PLG_ELEMENT_DROPDOWN_NO_SELECTION_VALUE_LABEL" />
+
+			<field name="dropdown_noselectionlabel"
+			       type="text"
+			       description="PLG_ELEMENT_DROPDOWN_NO_SELECTION_LABEL_DESC"
+			       label="PLG_ELEMENT_DROPDOWN_NO_SELECTION_LABEL_LABEL" />
+		</fieldset>
+		<!-- Id task: 209 -->
 	</fields>
 	<fields>
 		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="plg-element-dropdown" label="COM_FABRIK_OPTIONS">
 
 			<field type="helplink"
 				url="PLG_ELEMENT_DROPDOWN_HELP_SERVER" />
-
-			<field name="hidden"
-				   type="radio"
-				   default="0"
-				   class="btn-group"
-				   label="PLG_ELEMENT_DROPDOWN_HIDDEN_LABEL">
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
-			</field>
 
 			<field name="default"
 				type="fabrikeditor"
