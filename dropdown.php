@@ -102,7 +102,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 		// Id task: 209
 		if ($this->showPleaseSelect()) {
-			array_unshift($opts, JHTML::_('select.option', $params->get('dropdown_noselectionvalue', ''), $this->_getSelectLabel()));
+			array_unshift($opts, JHTML::_('select.option', $params->get('dropdown_noselectionvalue', ' '), $this->_getSelectLabel()));
 		}
 
 		/*
