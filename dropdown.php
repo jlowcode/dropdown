@@ -99,6 +99,12 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 			$i++;
 		}
+
+		// Id task: 209
+		if ($this->showPleaseSelect()) {
+			array_unshift($opts, JHTML::_('select.option', $params->get('dropdown_noselectionvalue', ' '), $this->_getSelectLabel()));
+		}
+
 		/*
 		 * If we have added an option that hasn't been saved to the database. Note you cant have
 		 * it not saved to the database and asking the user to select a value and label
@@ -192,9 +198,18 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		$opts->allowadd = $params->get('allow_frontend_addtodropdown', false) ? true : false;
 		$opts->value = $arSelected;
 		$opts->defaultVal = $this->getDefaultValue($data);
-		$opts->data = (empty($values) && empty($labels)) ? array() : array_combine($values, $labels);
 		$opts->multiple = (bool) $params->get('multiple', '0') == '1';
 		$opts->advanced = $this->getAdvancedSelectClass() != '';
+
+		// Begin - Id task: 209
+		$optsData = array_combine($values, $labels);
+		if ($this->showPleaseSelect()) {
+			array_unshift($optsData, JHTML::_('select.option', $params->get('dropdown_noselectionvalue', ''), $this->_getSelectLabel()));
+		}
+		$opts->show_please_select = $this->showPleaseSelect();
+		$opts->data = (empty($values) && empty($labels)) ? array() : $optsData;
+		// End - Id task: 209
+
 		JText::script('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL');
 
 		return array('FbDropdown', $id, $opts);
@@ -426,5 +441,49 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		}
 
 		return $str;
+	}
+
+	/**
+	 * Do you add a please select option to the list
+	 *
+	 * Id task: 209
+	 * 
+	 * @return  bool
+	 */
+	protected function showPleaseSelect()
+	{
+		$params      = $this->getParams();
+
+		if ($params->get('dropdown_show_please_select', false)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get select option label
+	 *
+	 * Id task: 209
+	 * 
+	 * @param  bool $filter get alt label for filter, if present using :: splitter
+	 *
+	 * @return  string
+	 */
+	protected function _getSelectLabel($filter = false)
+	{
+		$params = $this->getParams();
+		$label  = $params->get('dropdown_noselectionlabel');
+
+		if (strstr($label, '::')) {
+			$labels = explode('::', $label);
+			$label  = $filter ? $labels[1] : $labels[0];
+		}
+
+		if (!$filter && $label == '') {
+			$label = 'COM_FABRIK_PLEASE_SELECT';
+		}
+
+		return FText::_($label);
 	}
 }
