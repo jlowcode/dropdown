@@ -11,6 +11,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutInterface;
+use Joomla\String\StringHelper;
+use Joomla\CMS\HTML\HTMLHelper;
+use Fabrik\Helpers\Php;
+
 /**
  * Plugin element to render dropdown
  *
@@ -61,10 +67,10 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		$selected = (array) $this->getValue($data, $repeatCounter);
 
 		$errorCSS = $this->elementError != '' ? " elementErrorHighlight" : '';
-		$bootstrapClass = $params->get('bootstrap_class', '');
+		$bootstrapClass = $params->get('bootstrap_class', 'col-sm-3');
 		$advancedClass = $this->getAdvancedSelectClass();
 
-		$attributes = 'class="fabrikinput form-control inputbox input ' . $advancedClass . ' ' . $errorCSS . ' ' . $bootstrapClass . '"';
+		$attributes = 'class="fabrikinput form-select ' . $advancedClass . ' ' . $errorCSS . ' ' . $bootstrapClass . '"';
 
 		if ($multiple == '1')
 		{
@@ -88,11 +94,11 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 			// For values like '1"'
 			$tmpVal = htmlspecialchars($tmpVal, ENT_QUOTES);
-			$opt = JHTML::_('select.option', $tmpVal, $tmpLabel);
+			$opt = HTMLHelper::_('select.option', $tmpVal, $tmpLabel);
 			$opt->disable = $disable;
 			$opts[] = $opt;
 
-			if (in_array($tmpVal, $selected))
+			if (in_array(htmlspecialchars_decode($tmpVal), $selected))
 			{
 				$aRoValues[] = $this->getReadOnlyOutput($tmpVal, $tmpLabel);
 			}
@@ -115,7 +121,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 			{
 				if (!in_array($sel, $values) && $sel !== '')
 				{
-					$opts[] = JHTML::_('select.option', htmlspecialchars($sel, ENT_QUOTES), $sel);
+					$opts[] = HTMLHelper::_('select.option', htmlspecialchars($sel, ENT_QUOTES), $sel);
 					$aRoValues[] = $this->getReadOnlyOutput($sel, $sel);
 				}
 			}
@@ -149,8 +155,8 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 				$groupedOpts[$groupOptLabel][] = $opt;
 			}
 
-			// @todo JLayout list
-			$str = JHTML::_('select.groupedlist', $groupedOpts, $name, $settings);
+			// @todo LayoutInterface list
+			$str = HTMLHelper::_('select.groupedlist', $groupedOpts, $name, $settings);
 		}
 		else
 		{
@@ -198,6 +204,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		$opts->allowadd = $params->get('allow_frontend_addtodropdown', false) ? true : false;
 		$opts->value = $arSelected;
 		$opts->defaultVal = $this->getDefaultValue($data);
+		$opts->data = (empty($values) && empty($labels)) ? array() : array_combine($values, $labels);
 		$opts->multiple = (bool) $params->get('multiple', '0') == '1';
 		$opts->advanced = $this->getAdvancedSelectClass() != '';
 
@@ -209,8 +216,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		$opts->show_please_select = $this->showPleaseSelect();
 		$opts->data = (empty($values) && empty($labels)) ? array() : $optsData;
 		// End - Id task: 209
-
-		JText::script('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL');
+		Text::script('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL');
 
 		return array('FbDropdown', $id, $opts);
 	}
@@ -247,10 +253,10 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 					if ($element->eval == "1")
 					{
-						$v = @eval((string) stripslashes($default));
-						FabrikWorker::logEval($default, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
-					}
-					else
+						FabrikWorker::clearEval();
+						$v = Php::Eval(['code' => $default, 'vars'=>['data'=>$data]]);
+						FabrikWorker::logEval($v, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
+					} else
 					{
 						$v = $default;
 					}
@@ -384,7 +390,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 		for ($i = 0; $i < count($labels); $i++)
 		{
-			if (JString::strtolower($labels[$i]) == JString::strtolower($value))
+			if (StringHelper::strtolower($labels[$i]) == StringHelper::strtolower($value))
 			{
 				return $values[$i];
 			}
@@ -426,7 +432,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
 	{
 		$params = $this->getParams();
-		$condition = JString::strtoupper($condition);
+		$condition = StringHelper::strtoupper($condition);
 		$this->encryptFieldName($key);
 
 		if ((bool) $params->get('multiple', false))
