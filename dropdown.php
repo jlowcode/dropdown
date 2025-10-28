@@ -100,7 +100,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 			if (in_array(htmlspecialchars_decode($tmpVal), $selected))
 			{
-				$aRoValues[] = $this->getReadOnlyOutput($tmpVal, $tmpLabel);
+				$aRoValues[] = '<span class="tag-item">' . htmlspecialchars($tmpLabel, ENT_QUOTES) . '</span>';
 			}
 
 			$i++;
@@ -129,7 +129,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 		if (!$this->isEditable())
 		{
-			return implode(', ', $aRoValues);
+			return implode('', $aRoValues);
 		}
 
 		$settings = array();
