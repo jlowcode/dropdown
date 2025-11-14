@@ -100,7 +100,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 			if (in_array(htmlspecialchars_decode($tmpVal), $selected))
 			{
-				$aRoValues[] = $this->getReadOnlyOutput($tmpVal, $tmpLabel);
+				$aRoValues[] = '<span class="tag-item">' . htmlspecialchars($tmpLabel, ENT_QUOTES) . '</span>';
 			}
 
 			$i++;
@@ -129,7 +129,7 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 		if (!$this->isEditable())
 		{
-			return implode(', ', $aRoValues);
+			return implode('', $aRoValues);
 		}
 
 		$settings = array();
@@ -183,6 +183,40 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		$str .= $this->getAddOptionFields($repeatCounter);
 
 		return $str;
+	}
+
+	/**
+	 * Shows the data formatted for the list view
+	 *
+	 * @param   string   $data     Elements data
+	 * @param   stdClass &$thisRow All the data in the lists current row
+	 * @param   array    $opts     Rendering options
+	 *
+	 * @return  string    formatted value
+	 */
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	{
+		$profiler = Profiler::getInstance('Application');
+		JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
+
+		$dataArr = json_decode($data, true);
+
+		if (!is_array($dataArr)) {
+			return parent::renderListData($data, $thisRow, $opts);
+		}
+
+		$out = [];
+		foreach ($dataArr as $label) {
+			if ($label === null || $label === '' || $label === 'null') {
+				continue;
+			}
+			$safe = htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
+			$out[] = '<span class="tag-item">' . $safe . '</span>';
+		}
+
+		$data = json_encode(array_values($out));
+
+		return parent::renderListData($data, $thisRow, $opts);
 	}
 
 	/**
