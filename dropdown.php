@@ -16,6 +16,7 @@ use Joomla\CMS\Layout\LayoutInterface;
 use Joomla\String\StringHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Fabrik\Helpers\Php;
+use Joomla\CMS\Profiler\Profiler;
 
 /**
  * Plugin element to render dropdown
